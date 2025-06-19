@@ -45,14 +45,15 @@ public class ScraperService {
             List<WebElement> courses = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
                     By.cssSelector("tr[doclick='doOnClickCourse']")));
 
-            System.out.println(courses.size());
 
             if(!courseCode.isEmpty()) {
                 for (WebElement course : courses) {
                     String id = course.getAttribute("id");
+
                     if(id.equals(courseCode)) {
-                        System.out.println("debug");
+
                         course.click();
+
                         break;
                     }
                 }
@@ -63,12 +64,8 @@ public class ScraperService {
             for (WebElement courseRow : courseRows) {
                 try {
 
-                    List<WebElement> sectionRows = driver.findElements(By.cssSelector("table#sections tbody tr.tableRowClickEffect1"));
-
-                    for (WebElement sectionRow : sectionRows) {
-                        CourseSection section = sectionParser.parseRow(sectionRow);
-                        sections.add(section);
-                    }
+                    CourseSection section = sectionParser.parseRow(courseRow);
+                    sections.add(section);
 
                 } catch (TimeoutException e) {
                     System.err.println("Timeout while waiting for section rows.");
