@@ -18,20 +18,23 @@ public class CourseSectionParser {
         }
 
         CourseSection section = new CourseSection();
+        String sectionCode = columns.get(0).getText().trim();
+        String courseCode = sectionCode.substring(0, sectionCode.indexOf('-'));
 
-        // Adjust indices based on actual column order of your table
-        section.setSectionCode(columns.get(0).getText().trim());
+        sectionCode = sectionCode.substring(sectionCode.indexOf('-') + 1);
 
+        section.setInstructor(columns.get(1).getText().trim());
+        section.setCourseCode(courseCode);
         try {
+            section.setSection(parseInteger(sectionCode));
             section.setCapacity(parseInteger(columns.get(3).getText().trim()));
             section.setEnrolled(parseInteger(columns.get(6).getText().trim()));
+            section.setAvailable(parseInteger(columns.get(8).getText().trim()));
         } catch (NumberFormatException e) {
-            System.err.println("Failed to parse capacity/enrolled for section " + section.getSectionCode());
+            System.err.println("Failed to parse capacity/enrolled for section " + section.getSection());
             section.setCapacity(0);
             section.setEnrolled(0);
         }
-
-        // Add more fields if needed, e.g. instructor, schedule, room, etc.
 
         return section;
     }

@@ -2,21 +2,38 @@ package com.example.bilkent_offerings_api;
 
 public class CourseSection {
 
-    private String sectionCode;
+    private String courseCode;
+    private int section;
+    private String instructor;
     private int capacity;
     private int enrolled;
-
-    // Optional: add more fields later (like instructor, time, room, etc.)
+    private int available;
 
     public CourseSection() {
     }
 
-    public String getSectionCode() {
-        return sectionCode;
+    public String getCourseCode() {
+        return courseCode;
     }
 
-    public void setSectionCode(String sectionCode) {
-        this.sectionCode = sectionCode;
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
+    }
+
+    public int getSection() {
+        return section;
+    }
+
+    public void setSection(int section) {
+        this.section = section;
+    }
+
+    public String getInstructor() {
+        return instructor;
+    }
+
+    public void setInstructor(String instructor) {
+        this.instructor = instructor;
     }
 
     public int getCapacity() {
@@ -35,12 +52,23 @@ public class CourseSection {
         this.enrolled = enrolled;
     }
 
+    public int getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(int available) {
+        this.available = available;
+    }
+
     @Override
     public String toString() {
         return "Section{" +
-                "sectionCode='" + sectionCode + '\'' +
+                "courseCode=" + courseCode +
+                ", instructor=" + instructor +
+                ", section='" + section +
                 ", capacity=" + capacity +
                 ", enrolled=" + enrolled +
+                ", available=" + available +
                 '}';
     }
 }

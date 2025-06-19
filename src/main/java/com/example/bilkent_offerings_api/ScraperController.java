@@ -16,7 +16,7 @@ public class ScraperController {
 
     @GetMapping("/{department}")
     public List<CourseSection> getSections(@PathVariable String department,
-                                           @RequestParam(defaultValue = "cs102") String courseCode,
+                                           @RequestParam(defaultValue = "CS 102") String courseCode,
                                            @RequestParam(defaultValue = "20243") String semester) {
         return scraperService.scrapeSections(courseCode, department, semester);
     }

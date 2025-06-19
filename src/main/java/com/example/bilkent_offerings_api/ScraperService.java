@@ -25,7 +25,7 @@ public class ScraperService {
     private void initDriver() {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");  // Run in headless mode (no UI)
+        options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         options.addArguments("--window-size=1920,1200");
         options.addArguments("--ignore-certificate-errors");
@@ -45,17 +45,18 @@ public class ScraperService {
             List<WebElement> courses = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
                     By.cssSelector("tr[doclick='doOnClickCourse']")));
 
+            System.out.println(courses.size());
+
             if(!courseCode.isEmpty()) {
                 for (WebElement course : courses) {
                     String id = course.getAttribute("id");
                     if(id.equals(courseCode)) {
+                        System.out.println("debug");
                         course.click();
                         break;
                     }
                 }
             }
-
-
             List<WebElement> courseRows = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
                     By.cssSelector("tr[doclick='doOnClickSection']")));
 
