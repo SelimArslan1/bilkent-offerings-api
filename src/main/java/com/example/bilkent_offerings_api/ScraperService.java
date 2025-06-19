@@ -1,0 +1,90 @@
+package com.example.bilkent_offerings_api;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class ScraperService {
+
+    private WebDriver driver;
+    private final CourseSectionParser sectionParser;
+
+    public ScraperService(CourseSectionParser sectionParser) {
+        this.sectionParser = sectionParser;
+    }
+
+    private void initDriver() {
+        WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");  // Run in headless mode (no UI)
+        options.addArguments("--disable-gpu");
+        options.addArguments("--window-size=1920,1200");
+        options.addArguments("--ignore-certificate-errors");
+
+        this.driver = new ChromeDriver(options);
+    }
+
+    public List<CourseSection> scrapeSections(String courseCode, String department, String semester) {
+        List<CourseSection> sections = new ArrayList<>();
+        initDriver();
+
+        try {
+            String url = String.format("https://stars.bilkent.edu.tr/homepage/offerings.php?COURSE_CODE=%s&SEMESTER=%s", department, semester);
+            driver.get(url);
+
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            List<WebElement> courses = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+                    By.cssSelector("tr[doclick='doOnClickCourse']")));
+
+            if(!courseCode.isEmpty()) {
+                for (WebElement course : courses) {
+                    String id = course.getAttribute("id");
+                    if(id.equals(courseCode)) {
+                        course.click();
+                        break;
+                    }
+                }
+            }
+
+
+            List<WebElement> courseRows = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+                    By.cssSelector("tr[doclick='doOnClickSection']")));
+
+            for (WebElement courseRow : courseRows) {
+                try {
+
+                    List<WebElement> sectionRows = driver.findElements(By.cssSelector("table#sections tbody tr.tableRowClickEffect1"));
+
+                    for (WebElement sectionRow : sectionRows) {
+                        CourseSection section = sectionParser.parseRow(sectionRow);
+                        sections.add(section);
+                    }
+
+                } catch (TimeoutException e) {
+                    System.err.println("Timeout while waiting for section rows.");
+                } catch (Exception e) {
+                    System.err.println("Error while scraping a course: " + e.getMessage());
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Scraping failed: " + e.getMessage());
+        } finally {
+            if (driver != null) {
+                driver.quit();
+            }
+        }
+
+        return sections;
+    }
+}
+
