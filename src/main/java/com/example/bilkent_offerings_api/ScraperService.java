@@ -33,9 +33,11 @@ public class ScraperService {
         this.driver = new ChromeDriver(options);
     }
 
-    public List<CourseSection> scrapeSections(String courseCode, String department, String semester) {
+    public List<CourseSection> scrapeSections(String courseCode, String department, String semester, String section) {
         List<CourseSection> sections = new ArrayList<>();
         initDriver();
+
+        int sectionCode = Integer.parseInt(section);
 
         try {
             String url = String.format("https://stars.bilkent.edu.tr/homepage/offerings.php?COURSE_CODE=%s&SEMESTER=%s", department, semester);
@@ -64,8 +66,13 @@ public class ScraperService {
             for (WebElement courseRow : courseRows) {
                 try {
 
-                    CourseSection section = sectionParser.parseRow(courseRow);
-                    sections.add(section);
+                    CourseSection newSection = sectionParser.parseRow(courseRow);
+
+                    if(newSection.getSection() == sectionCode || sectionCode == 0) {
+
+                        sections.add(newSection);
+                        if(sectionCode != 0) break; // To exit looping the sections when only one section is wanted
+                    }
 
                 } catch (TimeoutException e) {
                     System.err.println("Timeout while waiting for section rows.");

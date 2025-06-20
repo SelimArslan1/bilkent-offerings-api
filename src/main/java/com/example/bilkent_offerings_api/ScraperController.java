@@ -16,9 +16,14 @@ public class ScraperController {
 
     @GetMapping("/{department}")
     public List<CourseSection> getSections(@PathVariable String department,
-                                           @RequestParam(defaultValue = "CS 102") String courseCode,
-                                           @RequestParam(defaultValue = "20243") String semester) {
-        return scraperService.scrapeSections(courseCode, department, semester);
+                                           @RequestParam(defaultValue = "") String courseCode,
+                                           @RequestParam(defaultValue = "20243") String semester,
+                                           @RequestParam(defaultValue = "0") String section) {
+        department = department.toUpperCase();
+        courseCode = department + " " + courseCode;
+        return scraperService.scrapeSections(courseCode, department, semester, section);
     }
+
+
 }
 
