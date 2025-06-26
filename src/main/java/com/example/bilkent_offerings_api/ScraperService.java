@@ -23,12 +23,28 @@ public class ScraperService {
     }
 
     private void initDriver() {
-        WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         options.addArguments("--window-size=1920,1200");
         options.addArguments("--ignore-certificate-errors");
+
+        // Check if running in Docker
+        String chromeDriver = System.getenv("CHROME_DRIVER");
+        String chromeBin = System.getenv("CHROME_BIN");
+
+        if (chromeDriver != null && chromeBin != null) {
+            // Running in Docker
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-extensions");
+            options.addArguments("--remote-debugging-port=9222");
+            options.setBinary(chromeBin);
+            System.setProperty("webdriver.chrome.driver", chromeDriver);
+        } else {
+            // Running locally
+            WebDriverManager.chromedriver().setup();
+        }
 
         this.driver = new ChromeDriver(options);
     }
@@ -89,6 +105,7 @@ public class ScraperService {
             }
         }
 
+        System.out.println("Course information sent.");
         return sections;
     }
 }
