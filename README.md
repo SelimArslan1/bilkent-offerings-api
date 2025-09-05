@@ -4,7 +4,7 @@ A simple Spring Boot API that scrapes course offerings data from **Bilkent STARS
 
 The scraper uses Selenium WebDriver to load the course list, click through interactive elements, and extract section details.
 
-Scrapes real-time data from STARS and returns clean JSON of course offerings  
+Scrapes real-time data from STARS and returns clean JSON of course offerings. Scraper also uses a Redis cache to cache recent responses for low latency.
 
 ## API Endpoints
 
@@ -26,6 +26,16 @@ Scrapes real-time data from STARS and returns clean JSON of course offerings
 
 ---
 
+## Redis Cache
+
+- **Technology:** Redis
+- **Purpose:** Cache recently scraped course sections for faster response and reduced scraping.  
+- **TTL:** Cached results expire after 5 minutes by default.  
+
+**Cache key structure:** 
+```
+courseSections::{department}:{courseCode}:{semester}:{section}
+```
 ### Example Request
 
 ```
