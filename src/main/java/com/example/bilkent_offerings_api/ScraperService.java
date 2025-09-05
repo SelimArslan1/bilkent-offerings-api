@@ -6,6 +6,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -49,6 +50,11 @@ public class ScraperService {
         this.driver = new ChromeDriver(options);
     }
 
+    @Cacheable(
+            value = "courseSections",
+            key = "#department + ':' + #courseCode + ':' + #semester + ':' + #section",
+            unless = "#result == null || #result.isEmpty()"
+    )
     public List<CourseSection> scrapeSections(String courseCode, String department, String semester, String section) {
         List<CourseSection> sections = new ArrayList<>();
         initDriver();
